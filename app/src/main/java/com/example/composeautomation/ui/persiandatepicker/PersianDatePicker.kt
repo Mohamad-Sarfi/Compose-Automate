@@ -147,6 +147,11 @@ private fun MainContent(
 ){
 
     val width = LocalConfiguration.current.screenWidthDp
+    val persianWeekDays = listOf("شنبه","یکشنبه","دوشنبه","سه شنبه","چهارشنبه","پنجشنبه","جمعه", )
+    val monthsList = listOf("فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد","شهریور","مهر","آبان","آذر","دی","بهمن","اسفند",)
+    val weekDay = JalaliCalendar(mYear.toInt(), monthsList.indexOf(mMonth) + 1, mDay.toInt()).dayOfWeek
+
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
@@ -155,9 +160,16 @@ private fun MainContent(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(10.dp)
                     .background(MaterialTheme.colors.primaryVariant)
-            )
+            ){
+                Row(
+                    Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(text = persianWeekDays[weekDay], style = MaterialTheme.typography.body1, color = MaterialTheme.colors.onPrimary)
+                }
+            }
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
