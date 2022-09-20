@@ -1,6 +1,7 @@
 package com.example.composeautomation.ui.report0
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -19,8 +20,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.composeautomation.ui.persiandatepicker.PersianDatePicker
+import com.example.composeautomation.ui.datepicker.PersianDatePicker
 import com.example.composeautomation.ui.theme.*
+
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -95,12 +97,12 @@ fun TimeRow(){
         }
 
         var startDate by remember {
-            mutableStateOf(mutableMapOf<String, String>())
+            mutableStateOf(mapOf<String, String>())
         }
         var endDate : Map<String, String>  = mutableMapOf<String, String>()
 
         if (!clicked){
-            PersianDatePicker(onDismiss = {clicked = it}, setDate = {startDate = it.toMutableMap()})
+            PersianDatePicker(onDismiss = {clicked = true}, setDate = {startDate = it})
         }
 
         Row(

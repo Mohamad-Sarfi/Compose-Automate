@@ -1,4 +1,4 @@
-package com.example.composeautomation.ui.persiandatepicker
+package com.example.composeautomation.ui.datepicker
 
 import android.util.Log
 import androidx.compose.animation.Crossfade
@@ -17,6 +17,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -59,14 +60,16 @@ fun PersianDatePicker(
     val width = LocalConfiguration.current.screenWidthDp
     val height = LocalConfiguration.current.screenHeightDp * .6
 
-    Dialog(onDismissRequest = { onDismiss(true) }) {
+    Dialog(
+        onDismissRequest = { onDismiss(true) }
+    ) {
         Card(
             modifier = Modifier
-                .size(width = width.dp, height = 450.dp)
+                .size(width = width.dp, height = 530.dp)
                 .padding(5.dp),
             shape = RoundedCornerShape(10.dp),
             elevation = 4.dp,
-            backgroundColor = Color(0xffe3f2fd)
+            backgroundColor = MaterialTheme.colors.background
         ) {
             Column(
                 Modifier
@@ -75,21 +78,7 @@ fun PersianDatePicker(
                 verticalArrangement = Arrangement.SpaceBetween,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-
-                Crossfade(targetState = selectedPart) { selected ->
-                    when (selected){
-                        "main" -> Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
-                            MainContent(mMonth, mYear, mDay,{mDay = it}, setMonth = {mMonth = it}, setYear = {mYear = it} ){selectedPart = it}
-                        }
-                        "month" -> Months(mMonth,{selectedPart = "main"} ){mMonth = it}
-                        "year" -> Years(mYear, setYear = {mYear = it}, changeSelectedPart = {selectedPart = "main"})
-                        else ->
-                            Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
-                                MainContent(mMonth, mYear, mDay, {mDay = it},setMonth = {mMonth = it}, setYear = {mYear = it} ){selectedPart = it}
-                            }
-                     }
-                }
-
+                MainContent(mMonth, mYear, mDay, selectedPart,{mDay = it},setMonth = {mMonth = it}, setYear = {mYear = it} ){selectedPart = it}
 
                 Row(
                     Modifier
@@ -140,6 +129,7 @@ private fun MainContent(
     mMonth: String,
     mYear : String,
     mDay : String,
+    selectedPart : String,
     setDay : (String) -> Unit,
     setMonth: (String) -> Unit,
     setYear: (String) -> Unit,
@@ -155,91 +145,134 @@ private fun MainContent(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
-        ) {
+    ) {
         Column() {
-            Box(
-                modifier = Modifier
+
+            Row(
+                Modifier
+                    .height(30.dp)
                     .fillMaxWidth()
-                    .background(MaterialTheme.colors.primaryVariant)
-            ){
-                Row(
-                    Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text(text = persianWeekDays[weekDay], style = MaterialTheme.typography.body1, color = MaterialTheme.colors.onPrimary)
-                }
+                    .background(MaterialTheme.colors.primary)
+                    .padding(vertical = 10.dp, horizontal = 25.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.End
+            ) {
+                //Text(text = "انتخاب تاریخ", color = MaterialTheme.colors.onPrimary, style = MaterialTheme.typography.body2)
             }
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(MaterialTheme.colors.primary)
-                    .padding(vertical = 18.dp, horizontal = 20.dp),
+                    .padding(vertical = 10.dp, horizontal = 25.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        Icons.Default.ChevronLeft,
-                        contentDescription = null,
-                        tint = MaterialTheme.colors.onPrimary,
-                        modifier = Modifier
-                            .padding(horizontal = 5.dp)
-                            .clip(CircleShape)
-                            .clickable {
-                                decreaseMonth(
-                                    mMonth,
-                                    mYear,
-                                    setMonth = { setMonth(it) },
-                                    setYear = { setYear(it) })
-                            }
-                    )
-
-                    Text(
-                        text = mYear,
-                        style = MaterialTheme.typography.h4,
-                        color = MaterialTheme.colors.onPrimary,
-                        modifier = Modifier.clickable {
-                            setSelected("year")
-                        }
-                    )
-
-                }
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Default.Edit, contentDescription = null, tint = MaterialTheme.colors.onPrimary)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.End
+                ){
                     Text(
                         text = mMonth,
-                        style = MaterialTheme.typography.h3,
+                        style = MaterialTheme.typography.h4,
                         color = MaterialTheme.colors.onPrimary,
                         modifier = Modifier
-                            .padding(horizontal = 10.dp)
+                            .padding(horizontal = 5.dp)
                             .clickable {
                                 setSelected("month")
                             }
                     )
-                    Text(text = mDay, style = MaterialTheme.typography.h3, color = MaterialTheme.colors.onPrimary)
-                    Icon(
-                        Icons.Default.ChevronRight,
-                        contentDescription = null,
-                        tint = MaterialTheme.colors.onPrimary,
+                    Text(text = mDay, style = MaterialTheme.typography.h4, color = MaterialTheme.colors.onPrimary)
+                    Text(text = " ،"  + persianWeekDays[weekDay - 1] , style = MaterialTheme.typography.h4, color = MaterialTheme.colors.onPrimary)
+
+                }
+
+            }
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp, vertical = 13.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row() {
+                    Text(
+                        text = mYear,
+                        style = MaterialTheme.typography.body1,
+                        color = MaterialTheme.colors.onBackground.copy(.7f),
+                        modifier = Modifier.clickable {
+                            setSelected("year")
+                        }
+                    )
+                    Text(
+                        text = mMonth,
+                        style = MaterialTheme.typography.body1,
+                        color = MaterialTheme.colors.onBackground.copy(.7f),
                         modifier = Modifier
-                            .padding(horizontal = 5.dp)
+                            .padding(horizontal = 8.dp)
                             .clickable {
-                                increaseMonth(
-                                    mMonth,
-                                    mYear,
-                                    setMonth = { setMonth(it) },
-                                    setYear = { setYear(it) })
+                                setSelected("month")
                             }
                     )
                 }
+                
+                Row() {
+                    if (selectedPart == "main") {
+                        Icon(
+                            Icons.Default.ChevronLeft,
+                            contentDescription = null,
+                            tint = Color.Black.copy(.7f),
+                            modifier = Modifier
+                                .padding(horizontal = 5.dp)
+                                .clip(CircleShape)
+                                .clickable {
+                                    decreaseMonth(
+                                        mMonth,
+                                        mYear,
+                                        setMonth = { setMonth(it) },
+                                        setYear = { setYear(it) })
+                                }
+                        )
+
+                        Icon(
+                            Icons.Default.ChevronRight,
+                            contentDescription = null,
+                            tint = Color.Black.copy(.7f),
+                            modifier = Modifier
+                                .padding(horizontal = 5.dp)
+                                .clip(CircleShape)
+                                .clickable {
+                                    increaseMonth(
+                                        mMonth,
+                                        mYear,
+                                        setMonth = { setMonth(it) },
+                                        setYear = { setYear(it) })
+                                }
+                        )
+                    }
+                }
+                
             }
 
-            Days(mMonth, mDay, mYear, setDay = {setDay(it)}, changeSelectedPart = {})
+            Crossfade(selectedPart) { part ->
+                when(part){
+                    "main" -> Days(mMonth, mDay, mYear, setDay = {setDay(it)}, changeSelectedPart = {})
+                    "month" -> Months(mMonth,{setSelected("main")} ){setMonth(it)}
+                    "year" -> Years(mYear, setYear = {setYear(it)}, changeSelectedPart = {setSelected("main")})
+                    else -> Days(mMonth, mDay, mYear, setDay = {setDay(it)}, changeSelectedPart = {})
+                }
+            }
+
         }
     }
 
 
 }
+
+
+
+
 
 private fun increaseMonth(mMonth: String, mYear: String,setMonth: (String) -> Unit, setYear: (String) -> Unit) {
     val monthsList = listOf("فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد","شهریور","مهر","آبان","آذر","دی","بهمن","اسفند",)
@@ -261,7 +294,7 @@ private fun decreaseMonth(mMonth: String, mYear: String,setMonth: (String) -> Un
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+
 @Composable
 private fun Months(mMonth : String, setSelected: () -> Unit ,setMonth : (String) -> Unit){
 
@@ -270,15 +303,15 @@ private fun Months(mMonth : String, setSelected: () -> Unit ,setMonth : (String)
     LazyVerticalGrid(
         modifier = Modifier.fillMaxSize(),
         columns = GridCells.Fixed(3),
-        contentPadding = PaddingValues(23.dp),
+        contentPadding = PaddingValues(20.dp),
         verticalArrangement = Arrangement.Center,
         horizontalArrangement = Arrangement.Center
     ){
         items(monthsList){
             Surface(
                 modifier = Modifier
-                    .padding(5.dp)
-                    .size(75.dp)
+                    .padding(10.dp)
+                    .size(70.dp)
                     .clip(CircleShape)
                     .clickable {
                         setMonth(it)
@@ -288,7 +321,7 @@ private fun Months(mMonth : String, setSelected: () -> Unit ,setMonth : (String)
                 shape = CircleShape,
                 color = if (mMonth == it) MaterialTheme.colors.primary else Color.Transparent,
 
-            ) {
+                ) {
                 Column(
                     Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Center,
@@ -320,8 +353,12 @@ private fun Days(mMonth: String,mDay : String , mYear: String , setDay : (String
 
     var daysList = mutableListOf<String>()
 
-    for (i in 1..weekDay){
-        daysList.add(" ")
+    Log.i("TAG_weekday", "$weekDay")
+
+    if (weekDay != 7){
+        for (i in 1..weekDay){
+            daysList.add(" ")
+        }
     }
 
     if (monthsList.indexOf(mMonth) < 6){
@@ -336,48 +373,53 @@ private fun Days(mMonth: String,mDay : String , mYear: String , setDay : (String
             }
         }
     }
-
-    Row(
+    Column(
         Modifier
             .fillMaxWidth()
-            .padding(vertical = 10.dp, horizontal = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ) {
-        weekDays.forEach{
-            Text(text = it, color = MaterialTheme.colors.primary.copy(.3f), style = MaterialTheme.typography.subtitle2)
+            .padding(top = 10.dp)) {
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(vertical = 2.dp, horizontal = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            weekDays.forEach{
+                Text(text = it, color = MaterialTheme.colors.primary.copy(.4f), style = MaterialTheme.typography.subtitle2)
+            }
         }
-    }
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(7),
-        modifier = Modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(horizontal =  15.dp, vertical = 3.dp),
-        verticalArrangement = Arrangement.Top,
-        horizontalArrangement = Arrangement.Center
-    ){
-        items(daysList){
-            Surface(
-                modifier = Modifier
-                    .padding(vertical = 1.dp)
-                    .size(45.dp)
-                    .clip(CircleShape)
-                    .clickable {
-                        if (it != " ") {
-                            changeSelectedPart("main")
-                            setDay(it)
-                        }
-                    },
-                shape = CircleShape,
-                color = if (mDay == it) MaterialTheme.colors.primary else Color.Transparent,
-                border = BorderStroke( 1.dp, color = if (it == today.toString() && monthsList.indexOf(mMonth) == thisMonth) MaterialTheme.colors.primary else Color.Transparent)
-            ) {
-                Row(Modifier.fillMaxSize(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center) {
-                    Text(text = it, style = MaterialTheme.typography.h5, color = if (mDay == it) Color.White else MaterialTheme.colors.primary)
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(7),
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(horizontal =  15.dp, vertical = 0.dp),
+            verticalArrangement = Arrangement.Top,
+            horizontalArrangement = Arrangement.Center
+        ){
+            items(daysList){
+                Surface(
+                    modifier = Modifier
+                        .padding(vertical = 1.dp)
+                        .size(45.dp)
+                        .clip(CircleShape)
+                        .clickable {
+                            if (it != " ") {
+                                changeSelectedPart("main")
+                                setDay(it)
+                            }
+                        },
+                    shape = CircleShape,
+                    color = if (mDay == it) MaterialTheme.colors.primary else Color.Transparent,
+                    border = BorderStroke( 1.dp, color = if (it == today.toString() && monthsList.indexOf(mMonth) == thisMonth) MaterialTheme.colors.primary else Color.Transparent)
+                ) {
+                    Row(Modifier.fillMaxSize(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center) {
+                        Text(text = it, style = MaterialTheme.typography.body1, color = if (mDay == it) MaterialTheme.colors.onPrimary else MaterialTheme.colors.onBackground.copy(.7f))
+                    }
                 }
             }
         }
+
     }
 }
 
