@@ -41,18 +41,6 @@ fun PersianRangeDatePicker(
         mutableStateOf("main")
     }
 
-    // Start date
-    var sMonth by remember {
-        mutableStateOf(monthsList[month - 1])
-    }
-
-    var sYear by remember {
-        mutableStateOf(year.toString())
-    }
-
-    var sDay by remember {
-        mutableStateOf(today.toString())
-    }
 
     //list = [year, month, day]
     var startDate by remember {
@@ -61,20 +49,6 @@ fun PersianRangeDatePicker(
 
     var endDate by remember {
         mutableStateOf(listOf(year, month, today))
-    }
-
-
-    // End date
-    var eMonth by remember {
-        mutableStateOf(monthsList[month - 1])
-    }
-
-    var eYear by remember {
-        mutableStateOf(year.toString())
-    }
-
-    var eDay by remember {
-        mutableStateOf(today.toString())
     }
 
 
@@ -135,14 +109,14 @@ fun PersianRangeDatePicker(
                                 setDate(
                                     listOf(
                                         mapOf(
-                                            "day" to sDay,
-                                            "month" to (monthsList.indexOf(sMonth) + 1).toString(),
-                                            "year" to sYear
+                                            "day" to startDate[2].toString(),
+                                            "month" to startDate[1].toString(),
+                                            "year" to startDate[0].toString()
                                         ),
                                         mapOf(
-                                            "day" to eDay,
-                                            "month" to (monthsList.indexOf(eMonth) + 1).toString(),
-                                            "year" to eYear
+                                            "day" to endDate[2].toString(),
+                                            "month" to endDate[1].toString(),
+                                            "year" to endDate[0].toString()
                                         )
                                     )
                                 )
@@ -267,7 +241,7 @@ private fun Days(
     var weekDay = JalaliCalendar(startDate[0].toInt(), startDate[1] + 1 , 1).dayOfWeek
 
     var today = JalaliCalendar().day
-    val thisMonth = JalaliCalendar().month -1
+    val thisMonth = JalaliCalendar().month
     Log.i("TAG_month","$thisMonth")
 
     var daysList = mutableListOf<String>()
@@ -322,7 +296,7 @@ private fun Days(
         val scope = rememberCoroutineScope()
         LaunchedEffect(key1 = 1){
             scope.launch {
-                gridState.scrollToItem(monthRange.indexOf(thisMonth))
+                gridState.scrollToItem(monthRange.indexOf(thisMonth-1))
             }
         }
 
@@ -335,7 +309,7 @@ private fun Days(
                 Row(
                     Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 30.dp, vertical = 2.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.End) {
+                        .padding(horizontal = 30.dp, vertical = 0.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.End) {
                     Text(text = monthsList[month], style = MaterialTheme.typography.body1, color = MaterialTheme.colors.onBackground.copy(.5f))
                 }
                 LazyVerticalGrid(
@@ -409,7 +383,7 @@ private fun setStartEndDates(
             } else {
                 setEndDate(listOf(endDate[0], month, day.toInt()))
             }
-            setStartBool(false)
+            //setStartBool(false)
         }
     }
 }
@@ -459,10 +433,12 @@ private fun decideDayShape(day : String, month: Int, startDate: List<Int>, endDa
 private fun isBetweenStartEnd(value : String, startDate: List<Int>, endDate: List<Int>, currentMonth : Int) : Boolean {
     if (value != " "){
         if (currentMonth == startDate[1] && currentMonth == endDate[1]){
+            Log.i("TAG_xxx", "current : $currentMonth")
             if (value.toInt() > startDate[2] && value.toInt() < endDate[2]){
                 return true
             }
         } else if (currentMonth in startDate[1]..endDate[1]){
+            Log.i("TAG_xxx", "in Range!!!!")
             if (value.toInt() < endDate[2]){
                 return true
             }
