@@ -21,6 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.composeautomation.ui.datepicker.PersianDatePicker
+import com.example.composeautomation.ui.datepicker.PersianRangeDatePicker
 import com.example.composeautomation.ui.theme.*
 
 
@@ -96,6 +97,10 @@ fun TimeRow(){
             mutableStateOf(true)
         }
 
+        var rangeClicked by remember {
+            mutableStateOf(true)
+        }
+
         var startDate by remember {
             mutableStateOf(mapOf<String, String>())
         }
@@ -103,6 +108,10 @@ fun TimeRow(){
 
         if (!clicked){
             PersianDatePicker(onDismiss = {clicked = true}, setDate = {startDate = it})
+        }
+
+        if (!rangeClicked){
+            PersianRangeDatePicker(onDismiss = {rangeClicked = it}, setDate = {})
         }
 
         Row(
@@ -114,7 +123,7 @@ fun TimeRow(){
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
 
-            IconButton(onClick = {  }) {
+            IconButton(onClick = { rangeClicked = false }) {
                 Icon(Icons.Default.Search, contentDescription = null, tint = Purple700)
             }
 
